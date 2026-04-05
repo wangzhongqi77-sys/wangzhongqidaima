@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的婚礼请柬 | Wedding Invitation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #ff6b9d;
+            --color-secondary: #c44569;
+            --color-background: #fff0f5;
+            --color-text: #5a3a4a;
+            --color-accent: #ff8fab;
+            --color-pink: #ffe4ec;
+            --color-white: #ffffff;
+            --shadow-soft: 0 4px 20px rgba(255, 107, 157, 0.1);
+            --shadow-medium: 0 8px 30px rgba(255, 107, 157, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .decoration-line {
+            width: 100%;
+            height: 30px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'%3E%3Cpath d='M0,15 Q25,5 50,15 T100,15' stroke='%23d4a574' fill='none' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='0' cy='15' r='3' fill='%23d4a574' opacity='0.6'/%3E%3Ccircle cx='50' cy='15' r='2' fill='%23d4a574' opacity='0.4'/%3E%3Ccircle cx='100' cy='15' r='3' fill='%23d4a574' opacity='0.6'/%3E%3C/svg%3E") repeat-x center;
+            background-size: 100px 30px;
+        }
+
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 视差滚动背景 */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: -1;
+            will-change: transform;
+        }
+
+        .parallax-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23d4af37' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") no-repeat bottom;
+            background-size: cover;
+        }
+
+        /* 动态粒子背景 */
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            transition: transform 0.3s ease-out;
+            will-change: transform;
+        }
+
+        .particle.gold {
+            fill: #d4af37;
+        }
+
+        .particle.heart {
+            fill: #8b2635;
+        }
+
+        .particle svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 内容卡片样式 */
+        .content-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            box-shadow: 
+                0 15px 50px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        }
+
+        /* 倒计时组件 */
+        .countdown-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.95), rgba(255, 143, 171, 0.95));
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+            animation: countdownFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes countdownFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* 音乐控制按钮 */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            font-size: 22px;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 107, 157, 0.6);
+        }
+
+        .music-btn.playing {
+            animation: musicPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(255, 107, 157, 0.8); }
+        }
+
+        .music-label {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--color-text);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .countdown-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .countdown-days {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .countdown-days span {
+            font-size: 18px;
+            font-weight: 400;
+            margin-left: 5px;
+        }
+
+        /* 详情卡片专用 */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, #ffe4ec 0%, #ffccd5 50%, #ffe4ec 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 105, 180, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 182, 193, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 192, 203, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+            animation: bgPulse 5s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 浪漫星空粒子背景 */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .star.large {
+            width: 4px;
+            height: 4px;
+            box-shadow: 0 0 10px white, 0 0 20px white;
+        }
+
+        .star.glow {
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #fff 0%, transparent 70%);
+            animation: starGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes starGlow {
+            0%, 100% { opacity: 0.2; box-shadow: 0 0 5px #fff; }
+            50% { opacity: 1; box-shadow: 0 0 20px #fff, 0 0 40px #ff69b4; }
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: particleFloat 10s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(255,182,193,0.8) 0%, transparent 70%);
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* 流星效果 */
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,1));
+            animation: shoot 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            30% { opacity: 0; }
+            100% { transform: translateX(500px) translateY(200px); opacity: 0; }
+        }
+
+        /* 打字机效果 */
+        .typewriter-container {
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .typewriter-text {
+            display: inline;
+            border-right: 3px solid var(--color-primary);
+            animation: blink 0.7s step-end infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes blink {
+            0%, 100% { border-color: var(--color-primary); }
+            50% { border-color: transparent; }
+        }
+
+        .fade-in-text {
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* 漂浮爱心 */
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 24px;
+            animation: floatUp 10s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.8; transform: translateY(80vh) scale(1); }
+            90% { opacity: 0.6; transform: translateY(10vh) scale(0.8); }
+            100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+        }
+
+        /* 爱心闪烁特效 */
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #ff69b4 0%, transparent 70%);
+            border-radius: 50%;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            letter-spacing: 8px;
+            color: var(--color-secondary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(48px, 10vw, 80px);
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--color-text) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-names {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(32px, 6vw, 52px);
+            color: var(--color-primary);
+            margin: 20px 0;
+            letter-spacing: 4px;
+        }
+
+        .hero-names span {
+            margin: 0 15px;
+        }
+
+        .hero-date {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 18px;
+            color: var(--color-secondary);
+            margin-top: 30px;
+            letter-spacing: 2px;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            color: var(--color-secondary);
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .scroll-hint::after {
+            content: '↓';
+            font-size: 24px;
+            margin-top: 8px;
+        }
+
+        /* 爱心动画 */
+        .hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart-anim {
+            position: absolute;
+            font-size: 30px;
+            opacity: 0.6;
+            animation: floatHeart 4s ease-in-out infinite;
+        }
+
+        .heart-1 { left: 10%; top: 20%; animation-delay: 0s; }
+        .heart-2 { left: 20%; top: 60%; animation-delay: 0.5s; }
+        .heart-3 { left: 80%; top: 30%; animation-delay: 1s; }
+        .heart-4 { left: 70%; top: 70%; animation-delay: 1.5s; }
+        .heart-5 { left: 40%; top: 80%; animation-delay: 2s; }
+        .heart-6 { left: 90%; top: 50%; animation-delay: 2.5s; }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+            50% { transform: translateY(-30px) scale(1.2); opacity: 1; }
+        }
+
+        /* Love Story Section */
+        .love-story {
+            text-align: center;
+            background: linear-gradient(180deg, var(--color-background) 0%, #dcedc8 100%);
+        }
+
+        .timeline {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            background: var(--color-background);
+            padding: 10px;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 20px;
+            background: var(--color-white);
+            border-radius: 15px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-content::before {
+            content: '💕';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 60px;
+            opacity: 0.1;
+            transform: rotate(30deg);
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .timeline-content:hover::before {
+            opacity: 0.3;
+            animation: rotateHeart 2s ease-in-out infinite;
+        }
+
+        @keyframes rotateHeart {
+            0%, 100% { transform: rotate(30deg) scale(1); }
+            50% { transform: rotate(30deg) scale(1.2); }
+        }
+
+        .timeline-content h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--color-text);
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .timeline-content p {
+            font-size: 14px;
+            color: var(--color-secondary);
+            line-height: 1.8;
+        }
+
+        .love-progress {
+            margin-top: 50px;
+            padding: 30px;
+            background: var(--color-white);
+            border-radius: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--color-background);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-secondary), var(--color-primary));
+            border-radius: 4px;
+            animation: progressMove 3s ease-in-out infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes progressMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .progress-text {
+            margin-top: 15px;
+            font-size: 16px;
+            color: var(--color-primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 2px;
+        }
+
+        /* SVG路线图样式 */
+        .svg-timeline-container {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(250, 243, 232, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(139, 38, 53, 0.1);
+            border: 2px solid var(--color-gold);
+        }
+
+        .love-roadmap {
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .roadmap-path {
+            opacity: 0.3;
+        }
+
+        .roadmap-draw {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 2s ease-out;
+        }
+
+        .roadmap-draw.animate {
+            stroke-dashoffset: 0;
+        }
+
+        .roadmap-node {
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: center;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .roadmap-node.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .roadmap-node circle {
+            filter: drop-shadow(0 2px 4px rgba(139, 38, 53, 0.3));
+        }
+
+        .roadmap-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--color-primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 4px;
+        }
+
+        /* Couple Section */
+        .couple {
+            text-align: center;
+            background: var(--color-white);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: var(--color-text);
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+            animation: titleShine 2s ease-in-out infinite;
+        }
+
+        @keyframes titleShine {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(255, 105, 180, 0.6), 0 0 40px rgba(255, 105, 180, 0.3); }
+        }
+
+        .section-title::before {
+            content: '💕';
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            animation: titleHeart 1.5s ease-in-out infinite;
+        }
+
+        @keyframes titleHeart {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+            animation: lineExpand 2s ease-in-out infinite;
+        }
+
+        @keyframes lineExpand {
+            0%, 100% { width: 60px; }
+            50% { width: 100px; }
+        }
+
+        .couple-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .couple-card {
+            padding: 40px 30px;
+            background: var(--color-background);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .couple-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .couple-photo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            overflow: hidden;
+            border: 4px solid var(--color-primary);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            animation: photoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes photoGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 105, 180, 0.6); }
+        }
+
+        .couple-photo::after {
+            content: '💕';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            opacity: 0;
+            animation: photoHeart 3s ease-in-out infinite;
+        }
+
+        @keyframes photoHeart {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .couple-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .couple-card:hover .couple-photo img {
+            transform: scale(1.1);
+        }
+
+        .couple-card:hover .couple-photo {
+            animation: none;
+            box-shadow: 0 0 50px rgba(255, 105, 180, 0.8);
+        }
+
+        .couple-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+
+        .couple-intro {
+            font-size: 15px;
+            color: var(--color-secondary);
+            line-height: 1.8;
+        }
+
+        .heart-divider {
+            font-size: 40px;
+            color: var(--color-primary);
+            animation: heartBeat 1s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+        }
+
+        /* Details Section */
+        .details {
+            background: linear-gradient(180deg, var(--color-background) 0%, var(--color-pink) 100%);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .detail-card {
+            background: var(--color-white);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .detail-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: var(--color-pink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .detail-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--color-text);
+            margin-bottom: 15px;
+        }
+
+        .detail-content {
+            font-size: 15px;
+            color: var(--color-secondary);
+            line-height: 1.8;
+        }
+
+        .detail-content strong {
+            color: var(--color-text);
+            display: block;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .map-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: var(--color-primary);
+            color: var(--color-white);
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .map-link:hover {
+            background: var(--color-accent);
+            transform: scale(1.05);
+        }
+
+        /* Wishes Section */
+        .wishes {
+            background: var(--color-white);
+        }
+
+        .wishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .wish-card {
+            background: var(--color-background);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid var(--color-primary);
+            transition: all 0.3s ease;
+        }
+
+        .wish-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .wish-author {
+            font-weight: 500;
+            color: var(--color-text);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .wish-content {
+            font-size: 14px;
+            color: var(--color-secondary);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .wish-time {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 15px;
+        }
+
+        .no-wishes {
+            text-align: center;
+            color: var(--color-secondary);
+            font-size: 15px;
+            padding: 40px;
+        }
+
+        .wish-form-container {
+            max-width: 600px;
+            margin: 40px auto 0;
+            padding: 30px;
+            background: var(--color-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .wish-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .wish-form .form-group {
+            margin-bottom: 0;
+        }
+
+        .wish-form input,
+        .wish-form textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--color-background);
+        }
+
+        .wish-form input:focus,
+        .wish-form textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 156, 109, 0.2);
+        }
+
+        .wish-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .wish-form .submit-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            color: var(--color-white);
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-family: 'Noto Sans SC', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wish-form .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 156, 109, 0.4);
+        }
+
+        /* RSVP Section */
+        .rsvp {
+            background: linear-gradient(180deg, var(--color-pink) 0%, var(--color-background) 100%);
+        }
+
+        .rsvp-form {
+            max-width: 600px;
+            margin: 40px auto 0;
+            background: var(--color-white);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            color: var(--color-text);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--color-background);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 156, 109, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 30px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--color-primary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            color: var(--color-white);
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .rsvp-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .rsvp-card {
+            background: var(--color-white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rsvp-card.attending {
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .rsvp-card.not-attending {
+            border-left: 4px solid #e74c3c;
+            opacity: 0.8;
+        }
+
+        .rsvp-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rsvp-name {
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 16px;
+        }
+
+        .rsvp-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 15px;
+        }
+
+        .rsvp-status.attending {
+            background: rgba(74, 156, 109, 0.2);
+            color: var(--color-primary);
+        }
+
+        .rsvp-status.not-attending {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .rsvp-details {
+            font-size: 13px;
+            color: var(--color-secondary);
+        }
+
+        .rsvp-gift {
+            font-size: 14px;
+            color: var(--color-primary);
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .rsvp-message {
+            font-size: 13px;
+            color: var(--color-secondary);
+            font-style: italic;
+            border-top: 1px dashed #eee;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: var(--color-primary);
+        }
+
+        .form-success.show {
+            display: block;
+        }
+
+        .form-success h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--color-text);
+            color: var(--color-pink);
+        }
+
+        .footer-thanks {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .section {
+                padding: 60px 15px;
+            }
+
+            .hero-subtitle {
+                font-size: 12px;
+                letter-spacing: 4px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .couple-grid {
+                gap: 30px;
+            }
+
+            .couple-photo {
+                width: 140px;
+                height: 140px;
+            }
+
+            .rsvp-form {
+                padding: 30px 20px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Floating Decorations */
+        .float-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.3;
+        }
+
+        .float-heart {
+            top: 20%;
+            left: 5%;
+            font-size: 30px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .float-flower {
+            top: 60%;
+            right: 5%;
+            font-size: 25px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* 天气提醒动画 */
+        .weather-banner {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.15), rgba(255, 218, 233, 0.2));
+            backdrop-filter: blur(10px);
+            padding: 30px 40px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 30px;
+            text-align: center;
+            overflow: hidden;
+            animation: weatherFloat 4s ease-in-out infinite;
+            box-shadow: 0 10px 40px rgba(255, 107, 157, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes weatherFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+        }
+
+        .weather-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: weatherShine 6s ease-in-out infinite;
+        }
+
+        @keyframes weatherShine {
+            0%, 100% { transform: translateX(-30%) translateY(-30%); }
+            50% { transform: translateX(30%) translateY(30%); }
+        }
+
+        .weather-icon {
+            font-size: 60px;
+            display: inline-block;
+            animation: iconBounce 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .weather-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: var(--color-text);
+            margin: 15px 0 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-message {
+            font-size: 16px;
+            color: var(--color-secondary);
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-temp {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .temp-label {
+            font-size: 14px;
+            color: var(--color-secondary);
+        }
+
+        .temp-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .weather-cloud {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.3;
+            animation: cloudDrift 8s ease-in-out infinite;
+        }
+
+        .weather-cloud.left {
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .weather-cloud.right {
+            right: 10%;
+            bottom: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes cloudDrift {
+            0%, 100% { transform: translateX(0) translateY(0); opacity: 0.3; }
+            25% { transform: translateX(20px) translateY(-10px); opacity: 0.5; }
+            50% { transform: translateX(0) translateY(-5px); opacity: 0.3; }
+            75% { transform: translateX(-20px) translateY(-10px); opacity: 0.5; }
+        }
+
+        .weather-sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            animation: sparkleFloat 3s ease-in-out infinite;
+        }
+
+        .weather-sparkle:nth-child(1) { left: 20%; top: 30%; animation-delay: 0s; }
+        .weather-sparkle:nth-child(2) { left: 80%; top: 20%; animation-delay: 1s; }
+        .weather-sparkle:nth-child(3) { left: 70%; top: 70%; animation-delay: 0.5s; }
+        .weather-sparkle:nth-child(4) { left: 30%; top: 80%; animation-delay: 1.5s; }
+
+        @keyframes sparkleFloat {
+            0%, 100% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .weather-banner {
+                margin: 20px 15px;
+                padding: 25px 20px;
+            }
+            .weather-title {
+                font-size: 22px;
+            }
+            .weather-message {
+                font-size: 14px;
+            }
+            .temp-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 视差滚动背景 -->
+    <div class="parallax-bg" id="parallax-bg"></div>
+    
+    <!-- 动态粒子背景 -->
+    <div class="particle-bg" id="particle-bg"></div>
+    
+    <!-- 背景粒子 -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- 漂浮爱心 -->
+    <div class="floating-hearts" id="floating-hearts"></div>
+
+    <!-- 倒计时组件 -->
+    <div class="countdown-container">
+        <div class="countdown-text">距离婚礼还有</div>
+        <div class="countdown-days" id="countdown">计算中...</div>
+    </div>
+
+    <!-- 音乐控制 -->
+    <div class="music-control">
+        <div class="music-label">🎵 东北风情的浪漫</div>
+        <button class="music-btn" id="music-btn" title="播放/暂停背景音乐">🔇</button>
+    </div>
+    <audio id="bg-music" loop>
+        <source src="https://music.163.com/song/media/outer/url?id=2025268540.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Decorations -->
+    <div class="float-decoration float-heart">💕</div>
+    <div class="float-decoration float-flower">🌸</div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-subtitle">Wedding Invitation</p>
+            <h1 class="hero-title">我们结婚啦</h1>
+            <p class="hero-names">
+                <span>东北雨姐</span>
+                <span>&</span>
+                <span>刘洋</span>
+            </p>
+            <p class="hero-date">2026年5月1日 · 劳动节</p>
+        </div>
+        
+        <!-- 爱心动画区域 -->
+        <div class="hearts-container">
+            <span class="heart-anim heart-1">❤️</span>
+            <span class="heart-anim heart-2">💕</span>
+            <span class="heart-anim heart-3">💖</span>
+            <span class="heart-anim heart-4">💗</span>
+            <span class="heart-anim heart-5">💘</span>
+            <span class="heart-anim heart-6">💝</span>
+        </div>
+        
+        <div class="scroll-hint" onclick="document.getElementById('couple').scrollIntoView({behavior: 'smooth'})">
+            向下滚动
+        </div>
+    </section>
+
+    <div class="decoration-line"></div>
+
+    <!-- 爱情故事 Section -->
+    <section class="section love-story" id="love-story">
+        <div class="content-card">
+            <h2 class="section-title">我们的故事</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">💕</div>
+                    <div class="timeline-content">
+                        <h3>相遇</h3>
+                        <p>在东北的黑土地上，两个有趣的灵魂相遇了。雨姐大大咧咧，刘洋踏实靠谱，这一相遇，就是一辈子的缘分。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">💖</div>
+                    <div class="timeline-content">
+                        <h3>相知</h3>
+                        <p>"干就完了！"是雨姐的口头禅，也是刘洋最爱的态度。从相识到相爱，简简单单四个菜，吃出了幸福的味道。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">💗</div>
+                    <div class="timeline-content">
+                        <h3>相爱</h3>
+                        <p>"我的女人我就乐意宠！"刘洋说。"我的男人，我就乐意宠！"雨姐说。这大概就是爱情最美的样子。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">💘</div>
+                    <div class="timeline-content">
+                        <h3>相守</h3>
+                        <p>2026年5月1日，我们将携手走进婚姻的殿堂。农村就这生活，简简单单，干就完了！</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SVG手绘风格路线图进度条 -->
+            <div class="svg-timeline-container">
+                <svg class="love-roadmap" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
+                    <!-- 手绘风格路径 -->
+                    <path class="roadmap-path" d="M 50 100 Q 200 50, 250 100 T 400 100 T 550 100 T 750 100" 
+                          fill="none" stroke="#d4af37" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,4"/>
+                    
+                    <!-- 路径动画线条 -->
+                    <path class="roadmap-draw" d="M 50 100 Q 200 50, 250 100 T 400 100 T 550 100 T 750 100" 
+                          fill="none" stroke="#8b2635" stroke-width="4" stroke-linecap="round"/>
+                    
+                    <!-- 节点 -->
+                    <g class="roadmap-node" data-stage="meet">
+                        <circle cx="50" cy="100" r="20" fill="#8b2635" stroke="#d4af37" stroke-width="3"/>
+                        <text x="50" y="105" text-anchor="middle" fill="#fff" font-size="16" font-family="Ma Shan Zheng">遇</text>
+                        <text x="50" y="150" text-anchor="middle" fill="#8b2635" font-size="14" font-family="Noto Sans SC">相遇</text>
+                    </g>
+                    
+                    <g class="roadmap-node" data-stage="know">
+                        <circle cx="250" cy="100" r="20" fill="#8b2635" stroke="#d4af37" stroke-width="3"/>
+                        <text x="250" y="105" text-anchor="middle" fill="#fff" font-size="16" font-family="Ma Shan Zheng">知</text>
+                        <text x="250" y="150" text-anchor="middle" fill="#8b2635" font-size="14" font-family="Noto Sans SC">相知</text>
+                    </g>
+                    
+                    <g class="roadmap-node" data-stage="love">
+                        <circle cx="400" cy="100" r="20" fill="#8b2635" stroke="#d4af37" stroke-width="3"/>
+                        <text x="400" y="105" text-anchor="middle" fill="#fff" font-size="16" font-family="Ma Shan Zheng">爱</text>
+                        <text x="400" y="150" text-anchor="middle" fill="#8b2635" font-size="14" font-family="Noto Sans SC">相爱</text>
+                    </g>
+                    
+                    <g class="roadmap-node" data-stage="forever">
+                        <circle cx="550" cy="100" r="20" fill="#8b2635" stroke="#d4af37" stroke-width="3"/>
+                        <text x="550" y="105" text-anchor="middle" fill="#fff" font-size="16" font-family="Ma Shan Zheng">守</text>
+                        <text x="550" y="150" text-anchor="middle" fill="#8b2635" font-size="14" font-family="Noto Sans SC">相守</text>
+                    </g>
+                    
+                    <g class="roadmap-node" data-stage="wedding">
+                        <circle cx="750" cy="100" r="25" fill="#d4af37" stroke="#8b2635" stroke-width="3"/>
+                        <text x="750" y="108" text-anchor="middle" fill="#8b2635" font-size="20" font-family="Ma Shan Zheng">婚</text>
+                        <text x="750" y="155" text-anchor="middle" fill="#8b2635" font-size="14" font-family="Noto Sans SC">婚礼</text>
+                    </g>
+                </svg>
+                <p class="roadmap-text">我们的爱情路线图</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="decoration-line"></div>
+
+    <!-- Couple Section -->
+    <section class="section couple" id="couple">
+        <div class="content-card">
+            <h2 class="section-title">新郎新娘</h2>
+            <div class="couple-grid">
+                <div class="couple-card">
+                    <div class="couple-photo">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face" alt="新郎">
+                    </div>
+                    <h3 class="couple-name">刘洋</h3>
+                    <p class="couple-intro">
+                        干就完了！<br>
+                        直接开造，我的女人我就乐意宠！
+                    </p>
+                </div>
+                <div class="heart-divider">❤</div>
+                <div class="couple-card">
+                    <div class="couple-photo">
+                        <img src="bride.jpg?v=2" alt="新娘">
+                    </div>
+                    <h3 class="couple-name">东北雨姐</h3>
+                    <p class="couple-intro">
+                        农村就这生活，简简单单四个菜。<br>
+                        带派不老铁，一起干就完了！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="decoration-line"></div>
+
+    <!-- Details Section -->
+    <section class="section details" id="details">
+        <div class="content-card">
+            <h2 class="section-title">婚礼详情</h2>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon">📅</div>
+                    <h3 class="detail-title">婚礼日期</h3>
+                    <div class="detail-content">
+                        <strong>2026年5月1日</strong>
+                        劳动节 · 星期四<br>
+                        中午12:00准时开始
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-icon">📍</div>
+                    <h3 class="detail-title">婚礼地点</h3>
+                    <div class="detail-content">
+                        <strong>江苏省徐州市丰县</strong>
+                        丰县饭店 宴会厅<br>
+                        丰县解放大道168号<br>
+                        <br>
+                        📞 酒店电话: 0516-89229186
+                    </div>
+                    <a href="https://map.baidu.com/search/%E4%B8%B0%E5%8E%BF%E9%80%9A%E7%94%A8%E5%A5%BD%E7%A5%9E" target="_blank" class="map-link" style="display: inline-block; padding: 10px 25px; background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); color: white; text-decoration: none; border-radius: 25px; font-size: 14px; margin-top: 15px;">🗺️ 打开导航</a>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-icon">🍽️</div>
+                    <h3 class="detail-title">婚宴安排</h3>
+                    <div class="detail-content">
+                        <strong>中式喜宴</strong>
+                        11:30 入席<br>
+                        11:58 开席<br>
+                        请准时入座
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 天气提醒 -->
+    <div class="weather-banner">
+        <span class="weather-cloud left">☁️</span>
+        <span class="weather-cloud right">☁️</span>
+        <div class="weather-sparkle"></div>
+        <div class="weather-sparkle"></div>
+        <div class="weather-sparkle"></div>
+        <div class="weather-sparkle"></div>
+        <div class="weather-icon">🌤️</div>
+        <h3 class="weather-title">天气提醒</h3>
+        <p class="weather-message">五一气温多变<br>带件外套，别冻着咱老铁！</p>
+        <div class="weather-temp">
+            <span class="temp-label">5月1日徐州气温</span>
+            <span class="temp-value">15-25°C</span>
+        </div>
+    </div>
+
+    <div class="decoration-line"></div>
+
+    <!-- Wishes Section -->
+    <section class="section wishes" id="wishes">
+        <h2 class="section-title">祝福墙</h2>
+        <div class="wishes-grid" id="wishes-list">
+            <!-- Dynamic content -->
+        </div>
+        
+        <!-- 添加祝福表单 -->
+        <div class="wish-form-container">
+            <form id="wish-form" class="wish-form">
+                <div class="form-group">
+                    <label for="wish-name">您的姓名</label>
+                    <input type="text" id="wish-name" placeholder="请输入您的名字">
+                </div>
+                <div class="form-group">
+                    <label for="wish-message">祝福语</label>
+                    <textarea id="wish-message" placeholder="留下您的祝福吧~干就完了！"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">送祝福</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="decoration-line"></div>
+
+    <!-- RSVP Section -->
+    <section class="section rsvp" id="rsvp">
+        <h2 class="section-title">参加确认</h2>
+        
+        <!-- 已确认宾客列表 -->
+        <div class="rsvp-list" id="rsvp-list">
+            <!-- 动态加载 -->
+        </div>
+        
+        <div class="rsvp-form">
+            <form id="rsvp-form">
+                <div class="form-group">
+                    <label for="guest-name">您的姓名 *</label>
+                    <input type="text" id="guest-name" required placeholder="请输入您的姓名">
+                </div>
+                <div class="form-group">
+                    <label>是否参加婚礼 *</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="attend" value="yes" checked>
+                            参加
+                        </label>
+                        <label>
+                            <input type="radio" name="attend" value="no">
+                            不参加
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="guest-count">参加人数</label>
+                    <input type="number" id="guest-count" min="1" max="10" value="1" placeholder="参加人数">
+                </div>
+                <div class="form-group">
+                    <label for="guest-gift">心意祝福（选填）</label>
+                    <input type="text" id="guest-gift" placeholder="留下您的祝福和心意~">
+                </div>
+                <div class="form-group">
+                    <label for="guest-message">祝福留言</label>
+                    <textarea id="guest-message" placeholder="请留下您的祝福...干就完了！"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">提交确认</button>
+            </form>
+            <div class="form-success" id="form-success">
+                <h3>感谢您的祝福！</h3>
+                <p>我们期待与您共同见证这美好时刻</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-thanks">带派不老铁</p>
+        <p class="footer-text">刘洋 & 东北雨姐 · 干就完了</p>
+    </footer>
+
+    <script>
+        // Scroll Animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Local Storage Keys
+        const WISHES_KEY = 'wedding_wishes';
+        const RSVPS_KEY = 'wedding_rsvps';
+
+        // 预设祝福语
+        const defaultWishes = [
+            { name: '老蒯', message: '祝雨姐和刘洋百年好合，早生贵子！干就完了！', time: Date.now() - 86400000 * 3 },
+            { name: '二柱子', message: '嫂子结婚必须的随份子！带派！', time: Date.now() - 86400000 * 2 },
+            { name: '翠花', message: '雨姐幸福就好，简单四个菜也值了！', time: Date.now() - 86400000 * 1 },
+            { name: '大明白', message: '祝新人白头偕老，直接开造！', time: Date.now() - 86400000 * 4 },
+            { name: '小胖', message: '雨姐必须幸福，我的女人我来宠！', time: Date.now() - 86400000 * 5 },
+            { name: '铁子', message: '祝东北雨姐新婚快乐，永远带派！', time: Date.now() - 86400000 * 2 },
+            { name: '老妹儿', message: '姐姐要幸福啊，干就完了！', time: Date.now() - 86400000 },
+        ];
+
+        // Load Wishes
+        function loadWishes() {
+            let wishes = JSON.parse(localStorage.getItem(WISHES_KEY) || '[]');
+            const wishesList = document.getElementById('wishes-list');
+            
+            // 如果没有本地数据，使用预设祝福
+            if (wishes.length === 0) {
+                // 将预设祝福保存到localStorage
+                localStorage.setItem(WISHES_KEY, JSON.stringify(defaultWishes));
+                wishes = defaultWishes;
+            }
+
+            wishesList.innerHTML = wishes.map(wish => `
+                <div class="wish-card">
+                    <div class="wish-author">${escapeHtml(wish.name)}</div>
+                    <div class="wish-content">"${escapeHtml(wish.message)}"</div>
+                    <div class="wish-time">${formatDate(wish.time)}</div>
+                </div>
+            `).reverse().join('');
+        }
+
+        // Handle Wish Form Submit
+        document.getElementById('wish-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('wish-name').value.trim();
+            const message = document.getElementById('wish-message').value.trim();
+            
+            if (!name || !message) {
+                alert('请填写您的姓名和祝福语！');
+                return;
+            }
+            
+            const wishes = JSON.parse(localStorage.getItem(WISHES_KEY) || '[]');
+            wishes.push({
+                name: name,
+                message: message,
+                time: Date.now()
+            });
+            localStorage.setItem(WISHES_KEY, JSON.stringify(wishes));
+            
+            // 清空表单
+            document.getElementById('wish-name').value = '';
+            document.getElementById('wish-message').value = '';
+            
+            // 重新加载祝福
+            loadWishes();
+            
+            alert('祝福已送达！感谢您的祝福~');
+        });
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Format Date
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        // 预设RSVP数据
+        const defaultRsvps = [
+            { name: '老蒯', attend: 'yes', count: 2, gift: '永远支持你们！', message: '祝雨姐新婚快乐！', time: Date.now() - 86400000 * 5 },
+            { name: '二柱子', attend: 'yes', count: 1, gift: '百年好合！', message: '嫂子结婚必须到场！', time: Date.now() - 86400000 * 4 },
+            { name: '翠花', attend: 'yes', count: 2, gift: '幸福美满！', message: '雨姐幸福我就开心！', time: Date.now() - 86400000 * 3 },
+            { name: '大明白', attend: 'yes', count: 1, gift: '早生贵子！', message: '祝新人百年好合！', time: Date.now() - 86400000 * 2 },
+            { name: '小胖', attend: 'yes', count: 2, gift: '永远幸福！', message: '雨姐结婚必须到场！', time: Date.now() - 86400000 * 1 },
+            { name: '铁子', attend: 'no', count: 0, gift: '新婚快乐！', message: '那天有事去不了，一定祝福！', time: Date.now() - 86400000 * 2 },
+            { name: '老妹儿', attend: 'yes', count: 1, gift: '甜甜蜜蜜！', message: '姐姐要幸福啊！', time: Date.now() },
+        ];
+
+        // Load RSVP List
+        function loadRsvps() {
+            let rsvps = JSON.parse(localStorage.getItem(RSVPS_KEY) || '[]');
+            const rsvpList = document.getElementById('rsvp-list');
+            
+            // 如果没有本地数据，使用预设
+            if (rsvps.length === 0) {
+                localStorage.setItem(RSVPS_KEY, JSON.stringify(defaultRsvps));
+                rsvps = defaultRsvps;
+            }
+            
+            const attendingCount = rsvps.filter(r => r.attend === 'yes').length;
+            
+            rsvpList.innerHTML = rsvps.map(rsvp => `
+                <div class="rsvp-card ${rsvp.attend === 'yes' ? 'attending' : 'not-attending'}">
+                    <div class="rsvp-card-header">
+                        <span class="rsvp-name">${escapeHtml(rsvp.name)}</span>
+                        <span class="rsvp-status ${rsvp.attend === 'yes' ? 'attending' : 'not-attending'}">
+                            ${rsvp.attend === 'yes' ? `参加 (${rsvp.count}人)` : '不参加'}
+                        </span>
+                    </div>
+                    ${rsvp.message ? `<div class="rsvp-message">"${escapeHtml(rsvp.message)}"</div>` : ''}
+                </div>
+            `).join('');
+            
+            // 显示统计信息
+            rsvpList.insertAdjacentHTML('afterbegin', `
+                <div class="rsvp-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); color: white;">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div style="font-size: 28px; font-weight: bold;">${rsvps.length}</div>
+                            <div style="font-size: 12px; opacity: 0.8;">已确认来宾</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 28px; font-weight: bold;">${attendingCount}</div>
+                            <div style="font-size: 12px; opacity: 0.8;">参加人数</div>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // Handle RSVP Form
+        document.getElementById('rsvp-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('guest-name').value.trim();
+            const attend = document.querySelector('input[name="attend"]:checked').value;
+            const count = document.getElementById('guest-count').value;
+            const gift = document.getElementById('guest-gift').value;
+            const message = document.getElementById('guest-message').value.trim();
+
+            if (!name) {
+                alert('请输入您的姓名');
+                return;
+            }
+
+            // Save RSVP
+            const rsvps = JSON.parse(localStorage.getItem(RSVPS_KEY) || '[]');
+            rsvps.push({
+                name,
+                attend,
+                count: attend === 'no' ? 0 : count,
+                gift: gift || '',
+                message,
+                time: Date.now()
+            });
+            localStorage.setItem(RSVPS_KEY, JSON.stringify(rsvps));
+
+            // Save to Wishes if message exists
+            if (message) {
+                const wishes = JSON.parse(localStorage.getItem(WISHES_KEY) || '[]');
+                wishes.push({
+                    name,
+                    message,
+                    time: Date.now()
+                });
+                localStorage.setItem(WISHES_KEY, JSON.stringify(wishes));
+            }
+
+            // Show success
+            document.getElementById('rsvp-form').style.display = 'none';
+            document.getElementById('form-success').classList.add('show');
+
+            // Reload
+            loadRsvps();
+            loadWishes();
+        });
+
+        // Initial Load
+        loadWishes();
+        loadRsvps();
+
+        // ====== 浪漫动画效果 ======
+        
+        // 生成浪漫星空背景
+        function createParticles() {
+            const container = document.getElementById('particles');
+            
+            // 生成星星
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                const size = Math.random();
+                if (size > 0.9) star.className = 'star large';
+                else if (size > 0.7) star.className = 'star glow';
+                else star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 2) + 's';
+                container.appendChild(star);
+            }
+            
+            // 生成粉色粒子（爱心形状）
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+            
+            // 生成流星
+            for (let i = 0; i < 3; i++) {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.top = (20 + Math.random() * 30) + '%';
+                shootingStar.style.left = '-100px';
+                shootingStar.style.animationDelay = (3 + Math.random() * 5) + 's';
+                shootingStar.style.animationDuration = '3s';
+                container.appendChild(shootingStar);
+            }
+        }
+
+        // 生成漂浮爱心
+        function createFloatingHearts() {
+            const container = document.getElementById('floating-hearts');
+            const hearts = ['💕', '💗', '💖', '💘', '💝', '❤️', '💟'];
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+                heart.style.animationDelay = Math.random() * 10 + 's';
+                heart.style.animationDuration = (8 + Math.random() * 6) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // 倒计时功能
+        function updateCountdown() {
+            const weddingDate = new Date('2026-05-01 12:00:00');
+            const now = new Date();
+            const diff = weddingDate - now;
+            
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown').innerHTML = 
+                    `${days}<span>天</span> ${hours}<span>时</span> ${minutes}<span>分</span> ${seconds}<span>秒</span>`;
+            } else {
+                document.getElementById('countdown').innerHTML = '婚礼进行中！💕';
+            }
+        }
+
+        // 初始显示并每秒更新
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // 背景音乐控制
+        const musicBtn = document.getElementById('music-btn');
+        const bgMusic = document.getElementById('bg-music');
+        let isPlaying = false;
+
+        // 尝试自动播放（可能需要用户交互才能播放）
+        function tryAutoPlay() {
+            bgMusic.volume = 0.5;
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                musicBtn.textContent = '🔊';
+                musicBtn.classList.add('playing');
+            }).catch(() => {
+                // 自动播放被阻止，保持静音状态
+                console.log('自动播放被阻止，请点击按钮播放');
+            });
+        }
+
+        // 按钮点击播放/暂停
+        musicBtn.addEventListener('click', function() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = '🔇';
+                musicBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    musicBtn.textContent = '🔊';
+                    musicBtn.classList.add('playing');
+                    isPlaying = true;
+                }).catch(e => {
+                    alert('请尝试点击播放音乐~');
+                });
+            }
+        });
+
+        // 页面加载后尝试自动播放（用户首次访问时）
+        document.addEventListener('click', function initAudio() {
+            if (!isPlaying) {
+                tryAutoPlay();
+            }
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+
+        // 初始化动画
+        createParticles();
+        createFloatingHearts();
+
+        // 打字机效果 - 逐字显示标题
+        const title = document.querySelector('.hero-title');
+        if (title) {
+            const text = title.textContent;
+            title.textContent = '';
+            title.style.opacity = '1';
+            let charIndex = 0;
+            
+            function typeWriter() {
+                if (charIndex < text.length) {
+                    title.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 150); // 每个字间隔150ms
+                }
+            }
+            
+            // 延迟开始打字
+            setTimeout(typeWriter, 500);
+        }
+
+        // 副标题打字机效果
+        const subtitle = document.querySelector('.hero-subtitle');
+        if (subtitle) {
+            const text = subtitle.textContent;
+            subtitle.textContent = '';
+            subtitle.style.opacity = '1';
+            let charIndex = 0;
+            
+            function typeWriterSub() {
+                if (charIndex < text.length) {
+                    subtitle.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriterSub, 100);
+                }
+            }
+            
+            setTimeout(typeWriterSub, 200);
+        }
+
+        // 日期打字机效果
+        const date = document.querySelector('.hero-date');
+        if (date) {
+            const text = date.textContent;
+            date.textContent = '';
+            date.style.opacity = '1';
+            let charIndex = 0;
+            
+            function typeWriterDate() {
+                if (charIndex < text.length) {
+                    date.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriterDate, 80);
+                }
+            }
+            
+            setTimeout(typeWriterDate, 1500);
+        }
+
+        // 名字渐入效果
+        const names = document.querySelectorAll('.hero-names span');
+        names.forEach((name, index) => {
+            name.style.opacity = '0';
+            name.style.transform = 'translateY(20px)';
+            name.style.transition = 'all 0.8s ease';
+            setTimeout(() => {
+                name.style.opacity = '1';
+                name.style.transform = 'translateY(0)';
+            }, 2000 + index * 500);
+        });
+
+        // ==================== 视差滚动效果 ====================
+        const parallaxBg = document.getElementById('parallax-bg');
+        let ticking = false;
+        
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * 0.5;
+            if (parallaxBg) {
+                parallaxBg.style.transform = `translateY(${rate}px)`;
+            }
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        });
+
+        // ==================== 动态粒子背景 ====================
+        const particleBg = document.getElementById('particle-bg');
+        const particleCount = 30;
+        const particles = [];
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // 创建SVG粒子
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const isGold = Math.random() > 0.5;
+            particle.classList.add(isGold ? 'gold' : 'heart');
+            
+            const size = Math.random() * 15 + 8;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            
+            // SVG图形
+            if (isGold) {
+                particle.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" opacity="0.6"/></svg>`;
+            } else {
+                particle.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" opacity="0.5"/></svg>`;
+            }
+            
+            particleBg.appendChild(particle);
+            
+            return {
+                element: particle,
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                originalX: x,
+                originalY: y
+            };
+        }
+        
+        // 初始化粒子
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(createParticle());
+        }
+        
+        // 鼠标移动时粒子散开
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            particles.forEach(p => {
+                const dx = p.x - mouseX;
+                const dy = p.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100) {
+                    const force = (100 - distance) / 100;
+                    p.vx += (dx / distance) * force * 2;
+                    p.vy += (dy / distance) * force * 2;
+                }
+            });
+        });
+        
+        // 动画循环
+        function animateParticles() {
+            particles.forEach(p => {
+                // 回到原位
+                p.vx += (p.originalX - p.x) * 0.02;
+                p.vy += (p.originalY - p.y) * 0.02;
+                
+                // 阻尼
+                p.vx *= 0.95;
+                p.vy *= 0.95;
+                
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                p.element.style.transform = `translate(${p.x - p.originalX}px, ${p.y - p.originalY}px)`;
+            });
+            
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ==================== SVG路线图动画 ====================
+        const roadmapObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const roadmap = entry.target;
+                    const drawPath = roadmap.querySelector('.roadmap-draw');
+                    const nodes = roadmap.querySelectorAll('.roadmap-node');
+                    
+                    // 播放音效（可选）
+                    playDingSound();
+                    
+                    // 路径绘制动画
+                    setTimeout(() => {
+                        drawPath.classList.add('animate');
+                    }, 300);
+                    
+                    // 节点依次弹出
+                    nodes.forEach((node, index) => {
+                        setTimeout(() => {
+                            node.classList.add('show');
+                            // 每个节点弹出时播放音效
+                            playPopSound();
+                        }, 800 + index * 400);
+                    });
+                    
+                    roadmapObserver.unobserve(roadmap);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        const loveRoadmap = document.querySelector('.love-roadmap');
+        if (loveRoadmap) {
+            roadmapObserver.observe(loveRoadmap);
+        }
+        
+        // 音效函数
+        function playDingSound() {
+            // 创建简单的"叮"声音效
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 880; // A5音符
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+        
+        function playPopSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 440; // A4音符
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+    </script>
+</body>
+</html>
